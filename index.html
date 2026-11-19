@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>قريب | خدمات حيّك</title>
+<meta name="description" content="ابحث عن الأعمال والخدمات الأقرب إليك: صيدليات، ورش، مطاعم، دروس وأكثر.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!--
+جدول Supabase (انسخه في SQL Editor):
+create table businesses(id uuid primary key default gen_random_uuid(), owner uuid references auth.users, name text not null, category text, phone text, hours text, description text, lat float8, lng float8, created_at timestamptz default now());
+alter table businesses enable row level security;
+create policy "read" on businesses for select using(true);
+create policy "add" on businesses for insert with check(auth.uid()=owner);
+create policy "edit" on businesses for update using(auth.uid()=owner);
+-->
+<style>
+:root{--deep:#07323B;--nile:#0B4F5C;--turq:#14B8A6;--sun:#FFC145;--mist:#EAF4F2;--ink:#12292E;--mute:#5B7378;--line:#D5E5E2}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Readex Pro',Tahoma,sans-serif;background:var(--mist);color:var(--ink);line-height:1.7}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:10px 16px}
+:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--deep);color:#fff}
+.logo{font-weight:700;font-size:1.6rem;display:flex;gap:10px;align-items:center}
+.logo i{width:14px;height:14px;border-radius:50%;background:var(--sun);box-shadow:0 0 0 5px rgba(255,193,69,.25)}
+.nav{display:flex;gap:8px}
+.btn{background:var(--sun);color:var(--deep);font-weight:600}
+.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}
+.hero{background:var(--deep);color:#fff;padding:26px 18px 64px;position:relative;overflow:hidden}
+.hero>*:not(svg){position:relative}
+.hero h1{font-size:clamp(1.9rem,6.5vw,3.2rem);line-height:1.35;font-weight:700;max-width:14ch}
+.hero p{margin-top:10px;max-width:34ch;color:#BFDAD6;font-weight:300}
+.radar{position:absolute;inset-inline-end:-140px;top:-40px;width:480px;max-width:none;opacity:.9}
+.radar .ping{transform-box:fill-box;transform-origin:center;opacity:0}
+@media(prefers-reduced-motion:no-preference){.radar .ping{animation:ping 3.6s ease-out infinite}}
+@keyframes ping{0%{transform:scale(.3);opacity:.8}100%{transform:scale(3);opacity:0}}
+.search{display:flex;gap:8px;background:#fff;border-radius:18px;padding:8px;margin-top:22px;max-width:620px}
+.search input{flex:1;min-width:0;border:0;font:inherit;padding:10px 12px;outline:0;color:var(--ink);background:transparent}
+.wrap{max-width:1000px;margin:-30px auto 0;padding:0 14px 40px;position:relative}
+#status{color:var(--mute);font-size:.9rem;margin:44px 4px 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px}
+.chip{background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:99px;white-space:nowrap;padding:7px 16px}
+.chip[aria-pressed=true]{background:var(--nile);color:#fff;border-color:var(--nile)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.card{background:#fff;border-radius:18px;padding:16px;border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:border-color .2s}
+.card:hover{border-color:var(--turq)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{font-size:1.1rem;line-height:1.5}
+.dist{background:var(--sun);color:var(--deep);border-radius:99px;padding:1px 12px;font-size:.85rem;font-weight:600;white-space:nowrap}
+.cat{color:var(--nile);font-weight:600;font-size:.9rem}
+.card p{color:var(--mute);font-size:.95rem;font-weight:300}
+.hrs{font-size:.85rem;color:var(--mute)}
+.acts{display:flex;gap:8px;margin-top:8px}
+.acts a{flex:1;text-align:center;padding:9px;border-radius:12px;text-decoration:none;font-weight:600;font-size:.95rem}
+.call{background:var(--nile);color:#fff}
+.wa{background:#DFF5EE;color:#0A6B4F}
+.empty{grid-column:1/-1;background:#fff;border-radius:18px;padding:28px;text-align:center;color:var(--mute)}
+dialog{border:0;border-radius:22px;padding:22px;width:min(440px,92vw);color:var(--ink);margin:auto}
+dialog::backdrop{background:rgba(7,50,59,.6)}
+dialog h2{font-size:1.3rem;margin-bottom:4px}
+label{display:block;margin-top:12px;font-size:.9rem;color:var(--mute)}
+input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;margin-top:4px;color:var(--ink);background:#fff}
+.btns{display:flex;gap:8px;margin-top:18px}
+.btns button{flex:1}
+.pri{background:var(--nile);color:#fff;font-weight:600}
+.sec{background:var(--mist);color:var(--ink)}
+.maplink{display:inline-block;margin-top:10px;color:var(--nile);font-weight:600}
+#toast{position:fixed;inset-inline:16px;bottom:18px;max-width:420px;margin-inline:auto;background:var(--deep);color:#fff;padding:12px 16px;border-radius:14px;opacity:0;pointer-events:none;transition:opacity .25s;text-align:center}
+#toast.on{opacity:1}
+footer{text-align:center;color:var(--mute);font-size:.85rem;padding:0 14px 28px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><i></i>قريب</div>
+  <nav class="nav">
+    <button class="ghost" id="btnAuth">دخول</button>
+    <button class="btn" id="btnAdd">أضف عملك</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <svg class="radar" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="none" stroke="rgba(255,255,255,.14)"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="120"/><circle cx="200" cy="200" r="180"/></g>
+    <circle class="ping" cx="200" cy="200" r="60" fill="none" stroke="#14B8A6" stroke-width="2"/>
+    <circle cx="200" cy="200" r="9" fill="#FFC145"/>
+    <g fill="#14B8A6"><circle cx="150" cy="160" r="6"/><circle cx="262" cy="130" r="6"/><circle cx="290" cy="250" r="6"/><circle cx="120" cy="280" r="6"/></g>
+    <g fill="#BFDAD6" font-size="13" font-family="Readex Pro,sans-serif"><text x="160" y="152">٢٠٠ م</text><text x="272" y="122">٦٠٠ م</text><text x="300" y="256">١٫٢ كم</text><text x="130" y="288">٩٠٠ م</text></g>
+  </svg>
+  <h1>كل ما يلزمك في حيّك، قريب منك</h1>
+  <p>ابحث عن صيدلية أو سبّاك أو مدرّس، وتصفّح الأقرب إليك أولاً.</p>
+  <div class="search" role="search">
+    <input id="q" type="search" placeholder="ابحث بالاسم: صيدلية، كهربائي…" aria-label="بحث بالاسم">
+    <button class="btn" id="loc">موقعي</button>
+  </div>
+</section>
+
+<main class="wrap">
+  <p id="status"></p>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid" aria-live="polite"></div>
+</main>
+<footer>الأعمال المعروضة الآن أمثلة تجريبية حتى يُربط الموقع بقاعدة البيانات.</footer>
+
+<dialog id="dDetail"><div id="detail"></div><div class="btns"><form method="dialog" style="flex:1;display:flex"><button class="sec" style="flex:1">إغلاق</button></form></div></dialog>
+
+<dialog id="dAuth">
+  <h2>حسابك في قريب</h2>
+  <label>البريد الإلكتروني<input id="em" type="email" autocomplete="email"></label>
+  <label>كلمة المرور<input id="pw" type="password" autocomplete="current-password" minlength="6"></label>
+  <div class="btns"><button class="pri" id="in">دخول</button><button class="sec" id="up">إنشاء حساب</button></div>
+  <div class="btns"><form method="dialog" style="flex:1;display:flex"><button class="sec" style="flex:1">إغلاق</button></form></div>
+</dialog>
+
+<dialog id="dAdd">
+  <form id="fAdd">
+    <h2>أضف عملك</h2>
+    <label>اسم العمل<input name="name" required maxlength="80"></label>
+    <label>التصنيف<select name="category" id="selCat"></select></label>
+    <label>رقم الهاتف مع رمز الدولة<input name="phone" type="tel" placeholder="+249…" required></label>
+    <label>ساعات العمل<input name="hours" maxlength="60" placeholder="٨ص – ١٠م"></label>
+    <label>وصف قصير<textarea name="description" rows="3" maxlength="240"></textarea></label>
+    <div class="btns"><button class="pri" type="submit">نشر العمل</button><button class="sec" type="button" id="cAdd">إلغاء</button></div>
+  </form>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<script>
+// ضع بيانات مشروع Supabase هنا. إن تُركت فارغة يعمل الموقع بوضع تجريبي.
+const CFG = { url: '', key: '' };
+
+const CATS = ['صيدلية','بقالة','مطعم','ورشة','كهرباء وسباكة','تعليم','صحة','حلاقة وتجميل','نقل وتوصيل','أخرى'];
+const DEMO = [
+  {id:'d1',name:'صيدلية الشفاء',category:'صيدلية',phone:'+249000000001',description:'أدوية ومستلزمات طبية، وتوصيل داخل الحي.',hours:'٨ص – ١٢م',dx:.2,dy:.1},
+  {id:'d2',name:'بقالة النور',category:'بقالة',phone:'+249000000002',description:'مواد غذائية ومنظفات بأسعار الحي.',hours:'٦ص – ١١م',dx:-.3,dy:.2},
+  {id:'d3',name:'مطعم السفرة',category:'مطعم',phone:'+249000000003',description:'وجبات منزلية وطلبات للمناسبات.',hours:'١٢ظ – ١١م',dx:.6,dy:-.3},
+  {id:'d4',name:'أحمد للكهرباء والسباكة',category:'كهرباء وسباكة',phone:'+249000000004',description:'صيانة منزلية سريعة، نصل خلال ساعة.',hours:'٧ص – ٩م',dx:-.5,dy:-.6},
+  {id:'d5',name:'ورشة الأمانة للسيارات',category:'ورشة',phone:'+249000000005',description:'ميكانيكا وكهرباء سيارات وفحص كمبيوتر.',hours:'٨ص – ٦م',dx:1.1,dy:.4},
+  {id:'d6',name:'مركز النخبة للدروس',category:'تعليم',phone:'+249000000006',description:'دروس تقوية للمرحلة الثانوية، مجموعات صغيرة.',hours:'٣ع – ٩م',dx:-1.2,dy:.9},
+  {id:'d7',name:'عيادة الأسرة',category:'صحة',phone:'+249000000007',description:'طبيب عام وأسنان، حجز بالهاتف.',hours:'٤ع – ١٠م',dx:1.8,dy:-1},
+  {id:'d8',name:'صالون الأناقة',category:'حلاقة وتجميل',phone:'+249000000008',description:'قص وتصفيف للرجال والأطفال.',hours:'٩ص – ١٠م',dx:-2.4,dy:1.5}
+];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').toLowerCase().replace(/[\u064B-\u065F\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+const nf = new Intl.NumberFormat('ar-EG', {maximumFractionDigits:1});
+let me = null, all = [], cat = 'الكل', sb = null, session = null, tt;
+
+function msg(t){ const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => e.classList.remove('on'), 3600); }
+function km(a,b,c,d){ const r = Math.PI/180, x = (c-a)*r, y = (d-b)*r, h = Math.sin(x/2)**2 + Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)**2; return 12742*Math.asin(Math.sqrt(h)); }
+const fd = d => d < 1 ? nf.format(Math.max(10, Math.round(d*100)*10)) + ' م' : nf.format(d) + ' كم';
+
+function place(){
+  if(!me) return;
+  all.forEach(b => { if(b.dx !== undefined && b.lat == null){ b.lat = me.lat + b.dy/111; b.lng = me.lng + b.dx/(111*Math.cos(me.lat*Math.PI/180)); } });
+}
+function local(){ try{ return JSON.parse(localStorage.getItem('qareeb_local') || '[]'); }catch{ return []; } }
+
+async function load(){
+  if(sb){
+    const {data, error} = await sb.from('businesses').select('*').limit(300);
+    all = error ? [] : data;
+    if(error) msg('تعذّر تحميل الأعمال. راجع إعدادات Supabase.');
+  } else all = DEMO.map(b => ({...b})).concat(local());
+  place(); render();
+}
+
+function acts(b){
+  const p = String(b.phone || '').replace(/[^\d+]/g,'');
+  return p ? `<div class="acts"><a class="call" href="tel:${p}">اتصل</a><a class="wa" href="https://wa.me/${p.replace('+','')}" target="_blank" rel="noopener">واتساب</a></div>` : '';
+}
+const card = b => `<article class="card" tabindex="0" data-id="${esc(b.id)}">
+  <div class="row"><h3>${esc(b.name)}</h3>${b._d != null ? `<span class="dist">${fd(b._d)}</span>` : ''}</div>
+  <div class="cat">${esc(b.category)}</div><p>${esc(b.description)}</p>
+  ${b.hours ? `<div class="hrs">ساعات العمل: ${esc(b.hours)}</div>` : ''}${acts(b)}</article>`;
+
+function render(){
+  const t = norm($('#q').value.trim());
+  const r = all.filter(b => (cat === 'الكل' || b.category === cat) && (!t || norm(b.name + ' ' + b.category + ' ' + (b.description || '')).includes(t)));
+  r.forEach(b => b._d = me && b.lat != null ? km(me.lat, me.lng, b.lat, b.lng) : null);
+  r.sort((a,b) => (a._d ?? 1e9) - (b._d ?? 1e9));
+  $('#grid').innerHTML = r.length ? r.map(card).join('') : '<p class="empty">لا توجد نتائج. جرّب اسماً آخر أو أضف هذا العمل بنفسك.</p>';
+  $('#status').textContent = me ? 'النتائج مرتبة من الأقرب إليك' : 'اضغط «موقعي» لترتيب النتائج حسب القرب';
+}
+
+function locate(cb){
+  if(!navigator.geolocation) return msg('متصفحك لا يدعم تحديد الموقع.');
+  navigator.geolocation.getCurrentPosition(p => { me = {lat:p.coords.latitude, lng:p.coords.longitude}; place(); render(); cb && cb(); },
+    () => msg('لم نحصل على موقعك. فعّل إذن الموقع للمتصفح ثم أعد المحاولة.'), {enableHighAccuracy:true, timeout:10000});
+}
+
+function openDetail(id){
+  const b = all.find(x => String(x.id) === id); if(!b) return;
+  const map = b.lat != null ? `<a class="maplink" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${Number(b.lat)},${Number(b.lng)}">افتح الموقع على الخريطة</a>` : '';
+  $('#detail').innerHTML = `<h2>${esc(b.name)}</h2><div class="cat">${esc(b.category)}</div><p style="margin:8px 0">${esc(b.description)}</p>${b.hours ? `<div class="hrs">ساعات العمل: ${esc(b.hours)}</div>` : ''}${b._d != null ? `<div class="hrs">يبعد عنك ${fd(b._d)}</div>` : ''}${map}${acts(b)}`;
+  $('#dDetail').showModal();
+}
+
+async function auth(kind){
+  if(!sb) return msg('الحسابات تعمل بعد ربط Supabase. الوضع الحالي تجريبي.');
+  const c = {email:$('#em').value, password:$('#pw').value};
+  const {error} = kind === 'up' ? await sb.auth.signUp(c) : await sb.auth.signInWithPassword(c);
+  if(error) return msg('تعذّر الدخول: ' + error.message);
+  msg(kind === 'up' ? 'تم إنشاء الحساب. افحص بريدك إن طُلب التأكيد.' : 'تم تسجيل الدخول.');
+  $('#dAuth').close();
+}
+
+// ربط الواجهة
+$('#chips').innerHTML = ['الكل', ...CATS].map(c => `<button class="chip" aria-pressed="${c === 'الكل'}">${c}</button>`).join('');
+$('#selCat').innerHTML = CATS.map(c => `<option>${c}</option>`).join('');
+$('#chips').onclick = e => { const b = e.target.closest('.chip'); if(!b) return; cat = b.textContent; document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); };
+$('#q').oninput = render;
+$('#loc').onclick = () => locate();
+$('#grid').onclick = e => { if(e.target.closest('a')) return; const c = e.target.closest('.card'); c && openDetail(c.dataset.id); };
+$('#grid').onkeydown = e => { if(e.key === 'Enter'){ const c = e.target.closest('.card'); c && openDetail(c.dataset.id); } };
+$('#btnAuth').onclick = async () => { if(sb && session){ await sb.auth.signOut(); msg('تم تسجيل الخروج.'); } else $('#dAuth').showModal(); };
+$('#btnAdd').onclick = () => $('#dAdd').showModal();
+$('#cAdd').onclick = () => $('#dAdd').close();
+$('#in').onclick = () => auth('in');
+$('#up').onclick = () => auth('up');
+
+$('#fAdd').onsubmit = ev => {
+  ev.preventDefault();
+  if(sb && !session){ msg('سجّل الدخول أولاً لإضافة عملك.'); $('#dAdd').close(); $('#dAuth').showModal(); return; }
+  const f = new FormData(ev.target);
+  const go = async () => {
+    const row = {name:f.get('name').trim(), category:f.get('category'), phone:f.get('phone').trim(), hours:f.get('hours').trim(), description:f.get('description').trim(), lat:me.lat, lng:me.lng};
+    if(sb){ row.owner = session.user.id; const {error} = await sb.from('businesses').insert(row); if(error) return msg('تعذّر الحفظ: ' + error.message); }
+    else { row.id = 'l' + Date.now(); try{ localStorage.setItem('qareeb_local', JSON.stringify(local().concat(row))); }catch{} }
+    ev.target.reset(); $('#dAdd').close(); msg('تمت إضافة عملك.'); load();
+  };
+  me ? go() : locate(go);
+};
+
+function ui(){ $('#btnAuth').textContent = sb && session ? 'خروج' : 'دخول'; }
+if(CFG.url && CFG.key){
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+  s.onload = () => {
+    sb = supabase.createClient(CFG.url, CFG.key);
+    sb.auth.getSession().then(({data}) => { session = data.session; ui(); });
+    sb.auth.onAuthStateChange((_, s) => { session = s; ui(); });
+    load();
+  };
+  document.head.append(s);
+} else load();
+</script>
+</body>
+</html>
