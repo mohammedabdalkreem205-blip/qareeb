@@ -23,14 +23,16 @@
     <button class="ic" data-a="theme" aria-label="تبديل الوضع الليلي" title="الوضع الليلي">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
+    <button class="btn ghost" type="button" data-auth-action="open">دخول / حساب جديد</button>
     <button class="btn gold" data-a="reg">سجّل كصاحب خبرة</button>
+    <button class="btn ghost" type="button" data-auth-action="logout" hidden>خروج</button>
   </div>
 </header>
 
 <section class="hero">
   <div class="wrap">
     <p class="eyebrow">منصة أهل الحي</p>
-    <h1>الصناعي الذي تبحث عنه… <em>أقرب مما تظن</em></h1>
+    <h1>الصنايعي الذي تبحث عنه… <em>أقرب مما تظن</em></h1>
     <p class="sub">كهرباء، سباكة، نجارة، فرن، وحرف كثيرة. اختر مهنتك، وسنرتّب لك الأقرب فالأقرب.</p>
   </div>
   <div class="zig"></div>
@@ -65,13 +67,28 @@
 </footer>
 
 <dialog id="authDlg">
-  <div class="f">
-    <h2>تسجيل الدخول</h2>
-    <p class="msg">أدخل بريدك الإلكتروني وسنرسل لك رابط دخول آمن، دون كلمة مرور.</p>
-    <input id="email" type="email" placeholder="name@example.com" autocomplete="email" dir="ltr">
-    <div class="row"><button class="btn" data-a="sendlink">أرسل الرابط</button><button class="btn ghost" data-a="close">إلغاء</button></div>
-    <p class="msg" id="authMsg"></p>
-  </div>
+  <form class="f" id="authForm" novalidate>
+    <h2 id="authTitle">تسجيل الدخول</h2>
+    <p class="msg" id="authIntro">استخدم رقم هاتفك السوداني وكلمة المرور.</p>
+    <label>رقم الهاتف
+      <input id="authPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0912345678" dir="ltr" maxlength="20" required>
+      <small>يمكنك إدخال الرقم بصيغة 09… أو 249…</small>
+    </label>
+    <label>كلمة المرور
+      <input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" required>
+    </label>
+    <label id="confirmWrap" hidden>تأكيد كلمة المرور
+      <input id="authConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128">
+    </label>
+    <p class="msg" id="authMsg" role="status" aria-live="polite"></p>
+    <div class="row">
+      <button class="btn" type="submit" id="authSubmit" style="flex:1">دخول</button>
+      <button class="btn ghost" type="button" data-auth-action="toggle">إنشاء حساب</button>
+      <button class="btn ghost" type="button" data-auth-action="close">إلغاء</button>
+    </div>
+    <a class="msg" href="https://wa.me/249923208354" target="_blank" rel="noopener noreferrer">نسيت كلمة المرور؟ تواصل مع الدعم عبر واتساب</a>
+    <p class="msg small">لا نرسل رسائل SMS. رقم الهاتف يُستخدم كاسم دخول.</p>
+  </form>
 </dialog>
 
 <dialog id="regDlg">
@@ -90,9 +107,9 @@
 </dialog>
 
 <div class="toast" id="toast" role="status"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
