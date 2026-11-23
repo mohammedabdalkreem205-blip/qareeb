@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data:; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#0e4d57">
+<meta name="description" content="قريب – منصة تجمع أصحاب الخبرة والحرف في حيّك، من الأقرب إليك.">
+<title>قريب – أهل الحرفة في حيّك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./" aria-label="قريب">
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2l12 14-12 14L4 16z" fill="var(--gold)"/><circle cx="16" cy="16" r="5" fill="var(--nile)"/></svg>
+    <span>قريب</span>
+  </a>
+  <div class="tools">
+    <button class="ic" data-a="theme" aria-label="تبديل الوضع الليلي" title="الوضع الليلي">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <button class="btn gold" data-a="reg">سجّل كصاحب خبرة</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">منصة أهل الحي</p>
+    <h1>الصنايعي الذي تبحث عنه… <em>أقرب مما تظن</em></h1>
+    <p class="sub">كهرباء، سباكة، نجارة، فرن، وحرف كثيرة. اختر مهنتك، وسنرتّب لك الأقرب فالأقرب.</p>
+  </div>
+  <div class="zig"></div>
+</section>
+
+<main class="wrap">
+  <section class="panel" aria-label="البحث">
+    <div class="srow">
+      <input id="q" type="search" placeholder="ابحث بالاسم أو المهنة…" maxlength="60" autocomplete="off">
+      <select id="city" aria-label="المدينة"></select>
+      <button class="btn" id="near" data-a="near">الأقرب إليّ</button>
+    </div>
+    <div class="recent" id="recent"></div>
+  </section>
+
+  <div class="chips" id="chips" role="tablist"></div>
+  <p class="info" id="info" aria-live="polite"></p>
+  <div class="grid" id="list"></div>
+
+  <section class="cta">
+    <h2>عندك صنعة؟ خلّي الناس تعرفك</h2>
+    <p>التسجيل مجاني، وبياناتك تحت سيطرتك: تعدّلها أو تحذفها متى شئت.</p>
+    <button class="btn" data-a="reg">ابدأ التسجيل</button>
+  </section>
+</main>
+
+<footer>
+  <div class="zig flip"></div>
+  <p class="logo-f">قريب</p>
+  <p>تصميم وبرمجة: <strong>محمد عبد الكريم محمد الامام</strong></p>
+  <p class="small">© 2026 جميع الحقوق محفوظة</p>
+</footer>
+
+<dialog id="authDlg">
+  <div class="f">
+    <h2>تسجيل الدخول</h2>
+    <p class="msg">أدخل بريدك الإلكتروني وسنرسل لك رابط دخول آمن، دون كلمة مرور.</p>
+    <input id="email" type="email" placeholder="name@example.com" autocomplete="email" dir="ltr">
+    <div class="row"><button class="btn" data-a="sendlink">أرسل الرابط</button><button class="btn ghost" data-a="close">إلغاء</button></div>
+    <p class="msg" id="authMsg"></p>
+  </div>
+</dialog>
+
+<dialog id="regDlg">
+  <div class="f">
+    <h2 id="regTitle">سجّل كصاحب خبرة</h2>
+    <label>الاسم<input id="rn" maxlength="60" autocomplete="name"></label>
+    <label>المهنة <small>(اكتب أي حرفة، وإن لم تكن في القائمة ستُضاف)</small>
+      <input id="rp" list="plist" maxlength="30" autocomplete="off"><datalist id="plist"></datalist></label>
+    <label>رقم الواتساب<input id="rt" inputmode="numeric" placeholder="0912345678" dir="ltr"></label>
+    <label>المدينة / الحي<input id="rc" maxlength="40"></label>
+    <label>نبذة عن خبرتك<textarea id="rb" rows="2" maxlength="160"></textarea></label>
+    <div class="row"><button class="btn ghost" data-a="pos" type="button">حدّد موقعي</button><span class="msg" id="rm">لم يُحدَّد الموقع</span></div>
+    <div class="row"><button class="btn" data-a="save" style="flex:1">حفظ</button><button class="btn ghost" data-a="close">إلغاء</button></div>
+    <button class="del" id="delBtn" data-a="del" hidden>حذف حسابي نهائياً</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
