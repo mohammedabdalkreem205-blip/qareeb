@@ -1,7 +1,6 @@
-// إعدادات قريب – ضع هنا رابط مشروع Supabase والمفتاح العام (publishable / anon) فقط.
-// تحذير: لا تضع هنا أبداً مفتاح service_role، فهو سري ويفتح كل شيء.
-// إن تُركت القيمتان فارغتين يعمل الموقع بوضع تجريبي ببيانات وهمية.
+// إعدادات قريب – استخدم رابط المشروع ومفتاح Supabase العام (Publishable) فقط.
+// لا تضع مفتاح secret/service_role أو كلمة مرور قاعدة البيانات في هذا الملف.
 window.QAREEB = {
-  SUPABASE_URL: "",
-  SUPABASE_KEY: ""
+  SUPABASE_URL: "https://ezvbehwqtqjewiqscxxn.supabase.co",
+  SUPABASE_KEY: "sb_publishable_NjuBRizlabesd23PH79wEQ_qoka_OIF"
 };
