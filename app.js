@@ -104,25 +104,54 @@ async function openAccount(){
   setAuthMode("login");$("#authUsername").value="";$("#authPassword").value="";$("#authPasswordConfirm").value="";$("#authDlg").showModal();
 }
 
+// ==========================================
+// الدالة المعدلة لحل مشكلة تسجيل الدخول
+// ==========================================
 async function authSubmit(){
   if(!db)return;
   const username=clean($("#authUsername").value).toLowerCase();
   const password=$("#authPassword").value;
   const confirm=$("#authPasswordConfirm").value;
   $("#authMsg").textContent="";
+  
   if(!validUsername(username))return $("#authMsg").textContent="اسم المستخدم غير صالح: 3 إلى 30 حرفًا إنجليزية وأرقام وشرطة سفلية.";
   if(password.length<8)return $("#authMsg").textContent="كلمة المرور يجب ألا تقل عن 8 أحرف.";
   if(authMode==="signup"&&password!==confirm)return $("#authMsg").textContent="كلمتا المرور غير متطابقتين.";
 
   const email=usernameToEmail(username);
+  
+  // تعطيل الزر لمنع الضغط المتكرر
+  const btn = $("#authSubmit");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "جاري المعالجة...";
+
   const result=authMode==="signup"
     ?await db.auth.signUp({email,password,options:{data:{username}}})
     :await db.auth.signInWithPassword({email,password});
-  if(result.error){$("#authMsg").textContent=authMode==="signup"?"تعذّر إنشاء الحساب أو الاسم مستخدم مسبقًا.":"اسم المستخدم أو كلمة المرور غير صحيحة.";return}
-  user=result.data.session?.user||null;
-  if(!user){const session=await db.auth.getSession();user=session.data.session?.user||null}
-  if(!user)return $("#authMsg").textContent="تمت العملية، افتح تسجيل الدخول مجددًا.";
-  $("#authDlg").close();updateAccountButton();
+
+  // إعادة تفعيل الزر
+  btn.disabled = false;
+  btn.textContent = originalText;
+
+  // عرض الخطأ الحقيقي بدلاً من الرسالة العامة
+  if(result.error){
+      console.error("Supabase Auth Error:", result.error); 
+      $("#authMsg").textContent = result.error.message; 
+      return;
+  }
+
+  user=result.data.session?.user || result.data.user || null;
+  if(!user){
+      const session=await db.auth.getSession();
+      user=session.data.session?.user||null;
+  }
+  
+  if(!user)return $("#authMsg").textContent="تمت العملية، يرجى إغلاق النافذة والمحاولة مجددًا.";
+  
+  $("#authDlg").close();
+  updateAccountButton();
+  toast("تم تسجيل الدخول بنجاح!");
   await openProfile();
 }
 
