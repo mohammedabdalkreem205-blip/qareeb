@@ -3,10 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data:">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0e4d57">
-<meta name="description" content="قريب – منصة تجمع أصحاب الخبرة والحرف في حيّك، من الأقرب إليك.">
 <title>قريب – أهل الحرفة في حيّك</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +37,8 @@
   <section class="panel" aria-label="البحث">
     <div class="srow">
       <input id="q" type="search" placeholder="ابحث بالاسم أو المهنة…" maxlength="60" autocomplete="off">
-      <select id="city" aria-label="المدينة"></select>
+      <select id="state" aria-label="الولاية"><option value="">كل الولايات</option></select>
+      <select id="city" aria-label="المدينة"><option value="">كل المدن</option></select>
       <button class="btn" id="near" data-a="near">الأقرب إليّ</button>
     </div>
     <div class="recent" id="recent"></div>
@@ -92,11 +90,25 @@
 <dialog id="regDlg">
   <div class="f">
     <h2 id="regTitle">استكمال بياناتك</h2>
+    
+    <!-- قسم رفع الصورة -->
+    <div class="avatar-upload">
+      <div id="avatarPreview" class="av-prev">صورة</div>
+      <input type="file" id="rf" accept="image/*" hidden>
+      <button class="btn ghost" type="button" onclick="document.getElementById('rf').click()">اختر صورة شخصية</button>
+    </div>
+
     <label>الاسم<input id="rn" maxlength="60" autocomplete="name"></label>
-    <label>المهنة <small>(اكتب أي حرفة، وإن لم تكن في القائمة ستُضاف)</small>
-      <input id="rp" list="plist" maxlength="30" autocomplete="off"><datalist id="plist"></datalist></label>
+    <label>المهنة <small>(اكتب حرفتك)</small>
+      <input id="rp" maxlength="30" autocomplete="off"></label>
     <label>رقم الواتساب<input id="rt" inputmode="numeric" placeholder="0912345678" dir="ltr"></label>
-    <label>المدينة / الحي<input id="rc" maxlength="40"></label>
+    
+    <div class="row">
+      <label style="flex:1">الولاية<select id="rs"></select></label>
+      <label style="flex:1">المدينة<input id="rc" maxlength="40"></label>
+    </div>
+    <label>المنطقة / الحي<input id="ra" maxlength="40" placeholder="مثال: الثورة، الرياض"></label>
+
     <label>نبذة عن خبرتك<textarea id="rb" rows="2" maxlength="160"></textarea></label>
     <div class="row"><button class="btn ghost" data-a="pos" type="button">حدّد موقعي</button><span class="msg" id="rm">لم يُحدَّد الموقع</span></div>
     <div class="row"><button class="btn" data-a="save" style="flex:1">حفظ</button><button class="btn ghost" data-a="close" type="button">إلغاء</button></div>
