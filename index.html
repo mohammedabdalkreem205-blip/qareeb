@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; img-src 'self' data:; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data:">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0e4d57">
 <meta name="description" content="قريب – منصة تجمع أصحاب الخبرة والحرف في حيّك، من الأقرب إليك.">
@@ -23,7 +23,7 @@
     <button class="ic" data-a="theme" aria-label="تبديل الوضع الليلي" title="الوضع الليلي">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
-    <button class="btn gold" data-a="reg">سجّل كصاحب خبرة</button>
+    <button class="btn gold" id="accountBtn" data-a="account">تسجيل الدخول</button>
   </div>
 </header>
 
@@ -53,7 +53,7 @@
   <section class="cta">
     <h2>عندك صنعة؟ خلّي الناس تعرفك</h2>
     <p>التسجيل مجاني، وبياناتك تحت سيطرتك: تعدّلها أو تحذفها متى شئت.</p>
-    <button class="btn" data-a="reg">ابدأ التسجيل</button>
+    <button class="btn" data-a="account">ابدأ التسجيل</button>
   </section>
 </main>
 
@@ -66,17 +66,32 @@
 
 <dialog id="authDlg">
   <div class="f">
-    <h2>تسجيل الدخول</h2>
-    <p class="msg">أدخل بريدك الإلكتروني وسنرسل لك رابط دخول آمن، دون كلمة مرور.</p>
-    <input id="email" type="email" placeholder="name@example.com" autocomplete="email" dir="ltr">
-    <div class="row"><button class="btn" data-a="sendlink">أرسل الرابط</button><button class="btn ghost" data-a="close">إلغاء</button></div>
-    <p class="msg" id="authMsg"></p>
+    <h2 id="authTitle">تسجيل الدخول</h2>
+    <div id="authTabs" class="row">
+      <button class="btn ghost" data-a="show-login" type="button">تسجيل الدخول</button>
+      <button class="btn ghost" data-a="show-signup" type="button">حساب جديد</button>
+    </div>
+    <label id="authUsernameLabel">اسم المستخدم
+      <input id="authUsername" maxlength="30" autocomplete="username" dir="ltr" placeholder="username">
+    </label>
+    <label>كلمة المرور
+      <input id="authPassword" type="password" minlength="8" autocomplete="current-password" dir="ltr">
+    </label>
+    <label id="confirmPasswordLabel" hidden>تأكيد كلمة المرور
+      <input id="authPasswordConfirm" type="password" minlength="8" autocomplete="new-password" dir="ltr">
+    </label>
+    <p class="msg" id="authHint">3 إلى 30 حرفًا: إنجليزية وأرقام وشرطة سفلية.</p>
+    <div class="row">
+      <button class="btn" id="authSubmit" data-a="auth-submit" type="button">دخول</button>
+      <button class="btn ghost" data-a="close" type="button">إلغاء</button>
+    </div>
+    <p class="msg" id="authMsg" aria-live="polite"></p>
   </div>
 </dialog>
 
 <dialog id="regDlg">
   <div class="f">
-    <h2 id="regTitle">سجّل كصاحب خبرة</h2>
+    <h2 id="regTitle">استكمال بياناتك</h2>
     <label>الاسم<input id="rn" maxlength="60" autocomplete="name"></label>
     <label>المهنة <small>(اكتب أي حرفة، وإن لم تكن في القائمة ستُضاف)</small>
       <input id="rp" list="plist" maxlength="30" autocomplete="off"><datalist id="plist"></datalist></label>
@@ -84,8 +99,8 @@
     <label>المدينة / الحي<input id="rc" maxlength="40"></label>
     <label>نبذة عن خبرتك<textarea id="rb" rows="2" maxlength="160"></textarea></label>
     <div class="row"><button class="btn ghost" data-a="pos" type="button">حدّد موقعي</button><span class="msg" id="rm">لم يُحدَّد الموقع</span></div>
-    <div class="row"><button class="btn" data-a="save" style="flex:1">حفظ</button><button class="btn ghost" data-a="close">إلغاء</button></div>
-    <button class="del" id="delBtn" data-a="del" hidden>حذف حسابي نهائياً</button>
+    <div class="row"><button class="btn" data-a="save" style="flex:1">حفظ</button><button class="btn ghost" data-a="close" type="button">إلغاء</button></div>
+    <div class="row"><button class="del" id="delBtn" data-a="del" hidden>حذف حسابي نهائياً</button><button class="del" data-a="logout" type="button">تسجيل الخروج</button></div>
   </div>
 </dialog>
 
