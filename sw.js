@@ -1,5 +1,5 @@
 // ⚠️ مهم جداً: قم بتغيير الرقم (v1) إلى (v2) ثم (v3) في كل مرة تقوم بتحديث الموقع
-const CACHE_NAME = 'qareeb-v2'; 
+const CACHE_NAME = 'qareeb-v2.0.0'; 
 const ASSETS = [
   './',
   './index.html',
