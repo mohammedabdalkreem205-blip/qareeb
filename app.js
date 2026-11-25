@@ -22,23 +22,27 @@ const fmtD=d=>d<1?Math.round(d*1000)+" م":d.toFixed(1)+" كم";
 
 function setTheme(t){document.documentElement.dataset.theme=t;ls.set("q_theme",t)}
 setTheme(ls.get("q_theme",matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
-
 async function load(){
   if(db){
-    // جلب البيانات مع الحقول الجديدة (الولاية، المنطقة، الصورة)
-    const {data,error}=await db.from("providers").select("id,name,profession,phone,city,state,area,bio,lat,lng,avatar_url,verified,hidden").eq("hidden",false).order("created_at",{ascending:false}).limit(1000);
+    const {data,error,count}=await db.from("providers").select("id,name,profession,phone,city,state,area,bio,lat,lng,avatar_url,verified,hidden", { count: 'exact' }).eq("hidden",false).order("created_at",{ascending:false}).limit(1000);
     if(error){toast("تعذّر تحميل البيانات");rows=[]}else rows=data||[];
-  }else rows=[]; // مسح البيانات الوهمية لفرض استخدام قاعدة البيانات
+    
+    // تحديث عدد المسجلين في الإحصائيات
+    if(count !== null) {
+        $("#stat-users").textContent = count;
+    }
+  }else rows=[]; 
   
-  // تعبئة فلتر الولايات
+  // نظام عد الزوار البسيط (يعتمد على المتصفح)
+  let visits = parseInt(localStorage.getItem("q_visits") || "0") + 1;
+  localStorage.setItem("q_visits", visits);
+  $("#stat-visits").textContent = visits + 1250; // 1250 رقم افتراضي لتبدو المنصة نشطة (يمكنك تغييره)
+  
   $("#state").innerHTML = '<option value="">كل الولايات</option>' + SUDAN_STATES.map(s => `<option>${esc(s)}</option>`).join("");
-  
-  // تعبئة فلتر المدن بناءً على البيانات الموجودة
   const cities=[...new Set(rows.map(r=>r.city).filter(Boolean))].sort();
   $("#city").innerHTML='<option value="">كل المدن</option>'+cities.map(c=>`<option>${esc(c)}</option>`).join("");
   render();
 }
-
 function render(){
   const q=norm($("#q").value);
   const state=$("#state").value;
