@@ -34,11 +34,18 @@ async function load(){
     }
   }else rows=[]; 
   
-  // نظام عد الزوار البسيط (يعتمد على المتصفح)
-  let visits = parseInt(localStorage.getItem("q_visits") || "0") + 1;
-  localStorage.setItem("q_visits", visits);
-  $("#stat-visits").textContent = visits + 1250; // 1250 رقم افتراضي لتبدو المنصة نشطة (يمكنك تغييره)
-  
+  // نظام عد الزوار الحقيقي (من قاعدة البيانات)
+try {
+  const { data: visitCount, error: visitError } = await db.rpc('increment_visits');
+  if (!visitError && visitCount !== null) {
+    $("#stat-visits").textContent = visitCount;
+  } else {
+    console.error("خطأ في جلب عدد الزوار:", visitError);
+  }
+} catch (err) {
+  console.error("خطأ غير متوقع:", err);
+}
+ 
   $("#state").innerHTML = '<option value="">كل الولايات</option>' + SUDAN_STATES.map(s => `<option>${esc(s)}</option>`).join("");
   const cities=[...new Set(rows.map(r=>r.city).filter(Boolean))].sort();
   $("#city").innerHTML='<option value="">كل المدن</option>'+cities.map(c=>`<option>${esc(c)}</option>`).join("");
