@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0e4d57">
 <title>قريب – أهل الحرفة في حيّك</title>
-<!-- إعدادات تطبيق الهاتف (PWA) -->
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="قريب">
 <link rel="icon" type="image/png" href="icon.png">
 <meta property="og:title" content="قريب – أهل الحرفة في حيّك">
 <meta property="og:description" content="المنصة التي تجمع أصحاب الخبرة والحرف في حيّك، من الأقرب إليك.">
 <meta property="og:image" content="hero-bg.jpg">
 <meta property="og:type" content="website">
+<!-- إعدادات تطبيق الهاتف (PWA) -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="قريب">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;500;700&display=swap">
@@ -27,11 +27,27 @@
       <img src="icon.png" alt="شعار قريب" style="width: 38px; height: 38px; border-radius: 8px; object-fit: cover;">
       <span>قريب</span>
     </a>
+    
     <nav class="nav-links">
       <a href="./">الرئيسية</a>
-      <a href="#about">عن الموقع</a>
-      <a href="#contact">اتصل بنا</a>
+      <!-- القائمة المنسدلة للمنصة -->
+      <div class="dropdown">
+        <a href="#" class="drop-btn">عن المنصة ▾</a>
+        <div class="dropdown-content">
+          <a href="#about">من نحن</a>
+          <a href="#how-it-works">كيف يعمل الموقع؟</a>
+        </div>
+      </div>
+      <!-- القائمة المنسدلة للتواصل -->
+      <div class="dropdown">
+        <a href="#" class="drop-btn">تواصل معنا ▾</a>
+        <div class="dropdown-content">
+          <a href="https://wa.me/249923208354" target="_blank">واتساب</a>
+          <a href="https://www.facebook.com/MohammedAbdalkreemMohammedAlemam" target="_blank">فيسبوك</a>
+        </div>
+      </div>
     </nav>
+
     <div class="tools">
       <button class="ic" data-a="theme" aria-label="تبديل الوضع الليلي"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
       <button class="btn gold" id="accountBtn" data-a="account">تسجيل الدخول</button>
@@ -81,9 +97,14 @@
     <h2>عن منصة قريب</h2>
     <p>منصة "قريب" هي منصتك الأولى للوصول إلى أصحاب الحرف والمهن المختلفة في حيّك ومدينتك بكل سهولة. هدفنا هو ربط أصحاب الخبرة بالزبائن بأسرع وقت وأقل جهد، مع توفير تجربة بحث ذكية تعتمد على الموقع الجغرافي.</p>
   </section>
+
+  <section id="how-it-works" class="info-section">
+    <h2>كيف يعمل الموقع؟</h2>
+    <p>1. ابحث عن المهنة التي تحتاجها (مثلاً: سباك).<br>2. حدد ولايتك ومدينتك لتظهر لك النتائج الأقرب.<br>3. اضغط على زر "واتساب" للتواصل المباشر مع صاحب الحرفة.<br>4. إذا كنت صاحب حرفة، اضغط على "ابدأ التسجيل" لعرض خدماتك مجاناً للجميع.</p>
+  </section>
 </main>
 
-<footer id="contact">
+<footer id="contact-footer">
   <div class="zig flip"></div>
   <div class="footer-content">
     <div class="f-brand">
@@ -106,7 +127,7 @@
   </div>
 </footer>
 
-<!-- النوافذ المنبثقة (Dialog) تبقى كما هي -->
+<!-- النوافذ المنبثقة (Dialog) -->
 <dialog id="authDlg">
   <div class="f">
     <h2 id="authTitle">تسجيل الدخول</h2>
