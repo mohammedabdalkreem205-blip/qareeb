@@ -22,6 +22,7 @@ const fmtD=d=>d<1?Math.round(d*1000)+" م":d.toFixed(1)+" كم";
 
 function setTheme(t){document.documentElement.dataset.theme=t;ls.set("q_theme",t)}
 setTheme(ls.get("q_theme",matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
+
 async function load(){
   if(db){
     const {data,error,count}=await db.from("providers").select("id,name,profession,phone,city,state,area,bio,lat,lng,avatar_url,verified,hidden", { count: 'exact' }).eq("hidden",false).order("created_at",{ascending:false}).limit(1000);
@@ -43,6 +44,7 @@ async function load(){
   $("#city").innerHTML='<option value="">كل المدن</option>'+cities.map(c=>`<option>${esc(c)}</option>`).join("");
   render();
 }
+
 function render(){
   const q=norm($("#q").value);
   const state=$("#state").value;
@@ -81,7 +83,8 @@ function card(r){
   // عرض الولاية والمنطقة إن وجدت
   const locationStr = [r.state, r.city, r.area].filter(Boolean).join(' - ');
 
-  return `<article class="card"><div class="top">${avatarHtml}<div><h3>${name}${badge}</h3><span class="tag">${esc(r.profession)}</span></div>${d}</div><p class="bio">${esc(r.bio||"")}</p><p class="bio">📍 ${esc(locationStr)}</p><div class="acts">${ph?`<a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/${ph}?text=${msg}">واتساب</a><a href="tel:+${ph}">اتصال</a>`:""}</div></article>`;
+  // تم إضافة class="call" لزر الاتصال هنا
+  return `<article class="card"><div class="top">${avatarHtml}<div><h3>${name}${badge}</h3><span class="tag">${esc(r.profession)}</span></div>${d}</div><p class="bio">${esc(r.bio||"")}</p><p class="bio">📍 ${esc(locationStr)}</p><div class="acts">${ph?`<a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/${ph}?text=${msg}">واتساب</a><a href="tel:+${ph}" class="call">اتصال</a>`:""}</div></article>`;
 }
 
 function getPos(ok,fail){
@@ -95,6 +98,7 @@ async function initAuth(){
   db.auth.onAuthStateChange((_e,s)=>{user=s?.user||null;updateAccountButton()});
   updateAccountButton();
 }
+
 function updateAccountButton(){
   $("#accountBtn").textContent=user?"حسابي":"تسجيل الدخول";
 }
@@ -268,3 +272,21 @@ $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")render()});
 $("#city").addEventListener("change",render);
 
 initAuth().then(load);
+
+// تسجيل التطبيق ليعمل كتطبيق هاتف ويكتشف التحديثات
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(registration => {
+      registration.update(); // التحقق من وجود تحديثات
+    }).catch(err => console.error('فشل تسجيل Service Worker:', err));
+  });
+
+  // إعادة تحميل الصفحة تلقائياً عند تفعيل التحديث الجديد
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
